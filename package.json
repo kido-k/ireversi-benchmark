@@ -1,0 +1,19 @@
+{
+  "name": "benchmark",
+  "version": "0.0.1",
+  "description": "",
+  "main": "default.js",
+  "scripts": {
+    "dev": "nodemon --watch src src/index.js",
+    "start": "node src/index.js",
+    "generate": "node src/generate.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "m-mitsuhide <m.mitsuhide@amatelus.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "chalk": "^2.4.1",
+    "nodemon": "^1.18.4"
+  }
+}

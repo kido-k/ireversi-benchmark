@@ -1,0 +1,39 @@
+const fs = require('fs');
+const { initPieces, judgePiece, getPieces } = require('./test/default.js');
+const pieces = [];
+
+const size = 201;
+const count = 10000;
+const users = 100;
+
+initPieces();
+let trues = 0;
+let falses = 0;
+
+while (trues < count) {
+  let piece = {
+    x: Math.floor(Math.random() * size - size / 2),
+    y: Math.floor(Math.random() * size - size / 2),
+    userId: Math.floor(Math.random() * users),
+    status: false,
+  };
+
+  let canPut = judgePiece(
+    piece.x,
+    piece.y,
+    piece.userId,
+  );
+
+  if (canPut) {
+    trues += 1;
+    piece.status = true;
+    pieces.push(piece);
+    if (trues % 100 === 0) console.log(`${trues * 100 / count}%`);
+  } else {
+    falses += 1;
+    if (falses % 2000 === 0) pieces.push(piece);
+  }
+}
+
+const matchers = getPieces();
+fs.writeFileSync('./assets/given.json', JSON.stringify({ pieces, matchers }), 'utf8');
