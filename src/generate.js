@@ -14,7 +14,7 @@ while (trues < count) {
   let piece = {
     x: Math.floor(Math.random() * size - size / 2),
     y: Math.floor(Math.random() * size - size / 2),
-    userId: Math.floor(Math.random() * users),
+    userId: Math.floor(Math.random() * users) + 1,
     status: false,
   };
 
