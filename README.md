@@ -56,4 +56,5 @@ $ npm run dev
 1. src/test/default.js を土台にしても良い
 1. userIdは1-65,535を想定
 1. 盤面の最大サイズはXY軸共に-256から255（262,144マス）
-1. 初期駒は { x: 0, y: 0, userId: 1 }
+1. 初期駒は { x: 0, y: 0, userId: 1 }  
+1. 速度を計測する関数はjudgePieceのみ  
