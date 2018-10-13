@@ -2,9 +2,9 @@ const fs = require('fs');
 const { initPieces, judgePiece, getPieces } = require('./test/default.js');
 const pieces = [];
 
-const size = 50; // 201
-const count = 2000; // 10000
-const users = 10; // 100
+const size = 201;
+const count = 10000;
+const users = 100;
 
 initPieces();
 let trues = 0;
@@ -36,4 +36,4 @@ while (trues < count) {
 }
 
 const matchers = getPieces();
-fs.writeFileSync('../assets/sample.json', JSON.stringify({ pieces, matchers }), 'utf8');
+fs.writeFileSync('./assets/given.json', JSON.stringify({ pieces, matchers }), 'utf8');
