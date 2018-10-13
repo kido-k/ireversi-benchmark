@@ -33,7 +33,6 @@ module.exports = {
     if (pieces.find(p => p.x === x & p.y === y)) {
       return false;
     }
-
     let status = false;
 
     const flip = [];
