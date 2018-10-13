@@ -6,7 +6,7 @@ module.exports = {
     pieces[0] = {
       x: 0,
       y: 0,
-      userId: 0,
+      userId: 1,
     };
   },
   judgePiece(x, y, userId) {
