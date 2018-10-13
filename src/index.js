@@ -2,7 +2,7 @@ const fs = require('fs');
 const chalk = require('chalk');
 const defaultSrc = require('./test/default.js');
 
-const { pieces, matchers } = JSON.parse(fs.readFileSync('./assets/given.json'));
+const { pieces, matchers } = JSON.parse(fs.readFileSync('./assets/sample.json'));
 let defaultTime;
 
 {
