@@ -9,10 +9,6 @@ let user = {};
 
 let cnt = 0;
 
-const descriptor = (prop) => {
-  return Object.getOwnPropertyDescriptor(pos, prop);
-};
-
 function initPieces() {
   pieces.length = 0;
   pieces[0] = { x: 0, y: 0, userId: 1, };
@@ -27,7 +23,7 @@ function getPieces() {
 
 function judgePiece(x, y, userId) {
   // マスに他コマがあるかどうか
-  const coordinate = makeCoordinate(x, y);
+  const coordinate = "" + x + "," + y;
   let status = false;
 
   if (pos[coordinate] !== undefined) {
@@ -41,20 +37,21 @@ function judgePiece(x, y, userId) {
       const passPosition = []; // 通って来たコマを一時保存する。めくれる条件のときはflipに移す。
       let nextCoordinate = makeCoordinate(x + dirAll[i][0], y + dirAll[i][1]);
       let idx = checkPosition(nextCoordinate);
-      while (idx) {
-        if (pieces[idx.value].userId !== userId) {
-          passPosition.push(idx.value);
+      while (idx !== undefined) {
+        if (pieces[idx].userId !== userId) {
+          passPosition.push(idx);
           n = (n + 1) | 0;
           nextCoordinate = makeCoordinate(x + dirAll[i][0] * n, y + dirAll[i][1] * n);
           idx = checkPosition(nextCoordinate);
         } else {
           status = true;
-          let j = 0;
+          let j = 0, p = 0;
           while (j < passPosition.length) {
-            if (passPosition[j] !== undefined) {
-              user[pieces[passPosition[j]].userId] -= 1;
+            p = passPosition[j];
+            if (p !== undefined) {
+              user[pieces[p].userId] -= 1;
               user[userId] += 1;
-              pieces[passPosition[j]].userId = userId;
+              pieces[p].userId = userId;
             }
             j = (j + 1) | 0;
           }
@@ -62,37 +59,32 @@ function judgePiece(x, y, userId) {
         }
       }
     }
-    // 他コマばかりで自コマがない場合、
   } else {
-    // 上下左右を検索
-    for (let i = 0; i < dirXY.length; i += 1) {
+    let i = 0;
+    while (i < dirXY.length) {
       const nextCoordinate = makeCoordinate(x + dirXY[i][0], y + dirXY[i][1]);
-      const idx = checkPosition(nextCoordinate);
-      if (idx) { // 上下左右いずれかのとなりに他コマがある場合
+      if (checkPosition(nextCoordinate) !== undefined) {
         status = true;
         break;
       }
+      i = (i + 1) | 0;
     }
   }
 
   if (status) {
     pieces.push({ x, y, userId });
-    if (user[userId] !== undefined) {
-      user[userId] += 1;
-    } else {
-      user[userId] = 1;
-    }
-    const coordinate = makeCoordinate(x, y);
-    pos[coordinate] = pieces.length - 1;
+    user[userId] = (user[userId] !== undefined)
+      ? user[userId] += 1 : user[userId] = 1;
+    pos[makeCoordinate(x, y)] = pieces.length - 1;
   }
   return status;
 }
 
 function checkPosition(coordinate) {
-  if (pos.hasOwnProperty(coordinate)) {
-    return descriptor(coordinate);
+  if (pos[coordinate] !== undefined) {
+    return pos[coordinate];
   }
-  return false;
+  return undefined;
 }
 
 function makeCoordinate(x, y) {
