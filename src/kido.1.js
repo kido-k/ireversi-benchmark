@@ -31,7 +31,7 @@ function judgePiece(x, y, userId) {
   if (havePiece(userId)) {
     for (let dir of dirAll) {
       const passPosition = makeTurnPieces(x + dir[0], y + dir[1], userId, dir, []);
-      if (passPosition.length) {
+      if (passPosition.length > 0) {
         doneReverse = true;
         for (let val of passPosition) {
           user[pieces[val].userId] -= 1;
