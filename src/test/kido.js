@@ -2,7 +2,6 @@
 const pieces = [];
 const dirXY = [[0, 1], [1, 0], [0, -1], [-1, 0]];
 const dirAll = [[0, 1], [1, 0], [0, -1], [-1, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]];
-let reversePieces = [];
 
 let pos = {};
 let user = {};
@@ -24,21 +23,21 @@ function judgePiece(x, y, userId) {
     return false;
   }
 
+  let doneReverse = false;
+
   if (haveOwnPiece(userId)) {      // １枚目か、２枚目以降かをチェック
-    reversePieces.length = 0;
     for (let dir of dirAll) {
-      makeReversePieces(x + dir[0], y + dir[1], userId, dir, []);
-    }
-    if (reversePieces.length > 0) {        // ひっくり返す駒があればuserIdを書き換える
-      for (let rev of reversePieces) {
-        for (let idx of rev) {
+      const reversePieces = makeReversePieces(x + dir[0], y + dir[1], userId, dir, []);
+      if (reversePieces) {        // ひっくり返す駒があればuserIdを書き換える
+        doneReverse = true;
+        for (let idx of reversePieces) {
           user[pieces[idx].userId] -= 1;
           user[userId] += 1;
           pieces[idx].userId = userId;
         }
       }
-      return putOwnPiece(x, y, userId)
     }
+    if (doneReverse) { return putOwnPiece(x, y, userId) };
   } else {
     for (let dir of dirXY) {  //四方のどこかに他者の駒があるかどうかをチェック
       if (checkPosition(x + dir[0], y + dir[1]) !== undefined) {
@@ -52,13 +51,12 @@ function judgePiece(x, y, userId) {
 function makeReversePieces(x, y, userId, dir, array) {
   let idx = checkPosition(x, y);
   if (idx === undefined) {
-    return;
+    return undefined;
   } else if (pieces[idx].userId !== userId) {
     array.push(idx);
-    makeReversePieces(x + dir[0], y + dir[1], userId, dir, array);
-  } else if (pieces[idx].userId === userId) {
-    reversePieces.push(array);
-    return;
+    return makeReversePieces(x + dir[0], y + dir[1], userId, dir, array);
+  } else {
+    return array;
   }
 }
 
