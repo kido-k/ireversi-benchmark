@@ -48,6 +48,19 @@ function judgePiece(x, y, userId) {
   return false;
 }
 
+function haveOwnPiece(userId) {
+  if (user[userId] > 0) { return true }
+  else { return false }
+}
+
+function checkPosition(x, y) {
+  const coordinate = "" + x + "," + y;
+  if (pos[coordinate] !== undefined) {
+    return pos[coordinate];
+  }
+  return undefined;
+}
+
 function makeReversePieces(x, y, userId, dir, array) {
   let idx = checkPosition(x, y);
   if (idx === undefined) {
@@ -60,25 +73,12 @@ function makeReversePieces(x, y, userId, dir, array) {
   }
 }
 
-function checkPosition(x, y) {
-  const coordinate = "" + x + "," + y;
-  if (pos[coordinate] !== undefined) {
-    return pos[coordinate];
-  }
-  return undefined;
-}
-
 function putOwnPiece(x, y, userId) {
   pieces.push({ x, y, userId });
   pos["" + x + "," + y] = pieces.length - 1;
-  user[userId] = (user[userId] !== undefined)
+  user[userId] = user[userId] !== undefined
     ? user[userId] += 1 : user[userId] = 1;
   return true;
-}
-
-function haveOwnPiece(userId) {
-  if (user[userId] > 0) { return true }
-  else { return false }
 }
 
 module.exports = { initPieces, judgePiece, getPieces };
