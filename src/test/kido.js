@@ -25,11 +25,14 @@ function judgePiece(x, y, userId) {
 
   let doneReverse = false;
 
-  if (haveOwnPiece(userId)) {      // １枚目か、２枚目以降かをチェック
+  if (user[userId] > 0) {      // １枚目か、２枚目以降かをチェック
+    let cnt = 0;
     for (let dir of dirAll) {
+      if(user[userId] <= cnt) break;
       const reversePieces = makeReversePieces(x + dir[0], y + dir[1], userId, dir, []);
       if (reversePieces) {        // ひっくり返す駒があればuserIdを書き換える
         doneReverse = true;
+        cnt += 1;
         for (let idx of reversePieces) {
           user[pieces[idx].userId] -= 1;
           user[userId] += 1;
@@ -46,11 +49,6 @@ function judgePiece(x, y, userId) {
     }
   }
   return false;
-}
-
-function haveOwnPiece(userId) {
-  if (user[userId] > 0) { return true }
-  else { return false }
 }
 
 function checkPosition(x, y) {
