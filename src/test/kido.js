@@ -1,82 +1,123 @@
-
 const pieces = [];
 const dirXY = [[0, 1], [1, 0], [0, -1], [-1, 0]];
-const dirAll = [[0, 1], [1, 0], [0, -1], [-1, 0], [-1, -1], [-1, 1], [1, 1], [1, -1]];
+const dirAll = [...dirXY, [-1, -1], [-1, 1], [1, 1], [1, -1]];
 
-let pos = {};
-let user = {};
+let pos = {},
+  user = {};
+
+let returns = [];
+let firsts = [];
+let seconds = [];
+let puts = [];
 
 function initPieces() {
+  initUser();
+  initPosition();
+}
+
+function initUser() {
+  delete user;
+  for (let i = 0; i <= 65535; i += 1) {
+    user[i] = 0;
+  }
+  user[1] = 1;
+}
+
+function initPosition() {
+  let coordinate = "";
+  delete pos;
   pieces.length = 0;
-  pieces[0] = { x: 0, y: 0, userId: 1, };
-  delete pos, user;
-  pos = { "0,0": 0 }, user = { 1: 1 };
+
+  for (let x = -255; x <= 255; x += 1) {
+    for (let y = -255; y <= 255; y += 1) {
+      // pieces.push({ x, y, userId: 0 });
+      coordinate = "" + x + "," + y;
+      pos[coordinate] = 0;
+      // cnt += 1;
+    }
+  }
+  pos["0,0"] = 1;
+}
+
+function makeCoordinate(x, y) {
+  return "" + x + "," + y;
 }
 
 function getPieces() {
+  // returns:  1740
+  // firsts:  21630
+  // seconds: 98710
+  // puts:   100000
+  console.log("returns: " + returns.length);
+  console.log("firsts: " + firsts.length);
+  console.log("seconds: " + seconds.length);
+  console.log("puts: " + puts.length);
   return pieces;
 }
 
 function judgePiece(x, y, userId) {
-  const coordinate = "" + x + "," + y;
-  if (pos[coordinate] !== undefined) {  //既に駒が置かれてないかチェック
+  if (pos[makeCoordinate(x, y)] !== 0) {
+    //既に駒が置かれてないかチェック
+    returns.push([x, y, userId]);
     return false;
   }
 
   let doneReverse = false;
 
-  if (user[userId] > 0) {      // １枚目か、２枚目以降かをチェック
-    let cnt = 0;
+  if (user[userId] > 0) {
+    // １枚目か、２枚目以降かをチェック
+    seconds.push([x, y, userId]);
     for (let dir of dirAll) {
-      if(user[userId] <= cnt) break;
-      const reversePieces = makeReversePieces(x + dir[0], y + dir[1], userId, dir, []);
-      if (reversePieces) {        // ひっくり返す駒があればuserIdを書き換える
+      const reversePieces = makeReversePieces(
+        x + dir[0],
+        y + dir[1],
+        userId,
+        dir,
+        []
+      );
+      if (reversePieces) {
+        // ひっくり返す駒があればuserIdを書き換える
         doneReverse = true;
-        cnt += 1;
-        for (let idx of reversePieces) {
-          user[pieces[idx].userId] -= 1;
+        for (let coordinate of reversePieces) {
+          user[pos[coordinate]] -= 1;
           user[userId] += 1;
-          pieces[idx].userId = userId;
+          pos[coordinate] = userId;
         }
       }
     }
-    if (doneReverse) { return putOwnPiece(x, y, userId) };
+    if (doneReverse) {
+      puts.push([x, y, userId]);
+      pos[makeCoordinate(x, y)] = userId;
+      user[userId] += 1;
+      return true;
+    }
   } else {
-    for (let dir of dirXY) {  //四方のどこかに他者の駒があるかどうかをチェック
-      if (checkPosition(x + dir[0], y + dir[1]) !== undefined) {
-        return putOwnPiece(x, y, userId);
+    firsts.push([x, y, userId]);
+    for (let dir of dirXY) {
+      //四方のどこかに他者の駒があるかどうかをチェック
+      let coordinate = makeCoordinate(x + dir[0], y + dir[1]);
+      if (pos[coordinate] !== 0) {
+        puts.push([x, y, userId]);
+        pos[makeCoordinate(x, y)] = userId;
+        user[userId] += 1;
+        return true;
       }
     }
   }
   return false;
 }
 
-function checkPosition(x, y) {
-  const coordinate = "" + x + "," + y;
-  if (pos[coordinate] !== undefined) {
-    return pos[coordinate];
-  }
-  return undefined;
-}
-
 function makeReversePieces(x, y, userId, dir, array) {
-  let idx = checkPosition(x, y);
-  if (idx === undefined) {
-    return undefined;
-  } else if (pieces[idx].userId !== userId) {
-    array.push(idx);
+  const coordinate = makeCoordinate(x, y);
+  if (pos[coordinate] === 0) {
+    return false;
+  } else if (pos[coordinate] !== userId) {
+    array.push(coordinate);
     return makeReversePieces(x + dir[0], y + dir[1], userId, dir, array);
   } else {
+    // console.log("x: " + x + " y: " + y + " idx: " + idx)
     return array;
   }
-}
-
-function putOwnPiece(x, y, userId) {
-  pieces.push({ x, y, userId });
-  pos["" + x + "," + y] = pieces.length - 1;
-  user[userId] = user[userId] !== undefined
-    ? user[userId] += 1 : user[userId] = 1;
-  return true;
 }
 
 module.exports = { initPieces, judgePiece, getPieces };
