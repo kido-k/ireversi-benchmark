@@ -8,11 +8,6 @@ const HOSEI = 255;
 let pos = {},
   user = {};
 
-let returns = [];
-let firsts = [];
-let seconds = [];
-let puts = [];
-
 function initPieces() {
   initUser();
   initPosition();
@@ -37,15 +32,6 @@ function initPosition() {
 }
 
 function getPieces() {
-  // returns:  1740
-  // firsts:  21630
-  // seconds: 98710
-  // puts:   100000
-  console.log("returns: " + returns.length);
-  console.log("firsts: " + firsts.length);
-  console.log("seconds: " + seconds.length);
-  console.log("puts: " + puts.length);
-  // console.log(returns);
   const re_pieces = [];
   for(let i = 0; i <= SIZE; i += 1){
     for(let j = 0; j <= SIZE; j += 1){
@@ -63,7 +49,6 @@ function getPieces() {
 
 function judgePiece(x, y, userId) {
   if (pieces[y + HOSEI][x + HOSEI] !== 0) {
-    returns.push([x, y, userId]);
     return false;
   }
 
@@ -71,7 +56,6 @@ function judgePiece(x, y, userId) {
 
   if (user[userId] > 0) {
     // １枚目か、２枚目以降かをチェック
-    seconds.push([x, y, userId]);
     for (let dir of dirAll) {
       const reversePieces = makeReversePieces(
         y + dir[1], x + dir[0], userId, dir, []
@@ -87,17 +71,14 @@ function judgePiece(x, y, userId) {
       }
     }
     if (doneReverse) {
-      puts.push([x, y, userId]);
       pieces[y + HOSEI][x + HOSEI] = userId;
       user[userId] += 1;
       return true;
     }
   } else {
-    firsts.push([x, y, userId]);
     for (let dir of dirXY) {
       //四方のどこかに他者の駒があるかどうかをチェック
       if (pieces[y + dir[1] + HOSEI][x + dir[0] + HOSEI] !== 0) {
-        puts.push([x, y, userId]);        
         pieces[y + HOSEI][x + HOSEI] = userId;
         user[userId] += 1;
         return true;

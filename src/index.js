@@ -5,27 +5,27 @@ const defaultSrc = require('./test/default.js');
 const { pieces, matchers } = JSON.parse(fs.readFileSync('./assets/given.json'));
 let defaultTime;
 
-// {
-//   defaultSrc.initPieces();
-//   var results = [];
-//   var { judgePiece } = defaultSrc;
-//   var startTime = Date.now();
+{
+  defaultSrc.initPieces();
+  var results = [];
+  var { judgePiece } = defaultSrc;
+  var startTime = Date.now();
 
-//   for (var piece, i = 0, n = pieces.length; i < n; i += 1) {
-//     piece = pieces[i];
-//     results.push(judgePiece(
-//       piece.x,
-//       piece.y,
-//       piece.userId,
-//     ));
-//   }
+  for (var piece, i = 0, n = pieces.length; i < n; i += 1) {
+    piece = pieces[i];
+    results.push(judgePiece(
+      piece.x,
+      piece.y,
+      piece.userId,
+    ));
+  }
 
-//   defaultTime = Date.now() - startTime;
-//   console.log(chalk`{yellow [default.js]} result: ${defaultTime}ms`);
-// }
+  defaultTime = Date.now() - startTime;
+  console.log(chalk`{yellow [default.js]} result: ${defaultTime}ms`);
+}
 
 const srcList = fs.readdirSync('./src/test').filter(n => !/^(default|template)\.js$/.test(n));
-const count = 1;
+const count = 10;
 
 for (let m = 0; m < srcList.length; m += 1) {
   var filename = srcList[m];
@@ -70,5 +70,5 @@ for (let m = 0; m < srcList.length; m += 1) {
   var ratio = defaultTime / elapsed * 100 - 100;
 
   console.log(chalk`{yellow [${filename}]} elapsed: ${elapsedList}`);
-  // console.log(chalk`{yellow [${filename}]} result: ${elapsed}ms {${ratio > 0 ? 'green' : 'red'} ${ratio > 0 ? '+' : ''}${ratio}%}`);
+  console.log(chalk`{yellow [${filename}]} result: ${elapsed}ms {${ratio > 0 ? 'green' : 'red'} ${ratio > 0 ? '+' : ''}${ratio}%}`);
 }
