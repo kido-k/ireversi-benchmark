@@ -5,6 +5,8 @@ const dirAll = [...dirXY, [-1, -1], [-1, 1], [1, 1], [1, -1]];
 const SIZE = 255 * 2;
 const HOSEI = 255;
 
+let reversePieces = [];
+
 let pos = {},
   user = {};
 
@@ -31,17 +33,18 @@ function initPosition() {
   pieces[conv(0)][conv(0)] = 1;
 }
 
-const conv = (n) => {
+const conv = n => {
   return n + HOSEI;
-} 
+};
 
 function getPieces() {
-  const re_pieces = [];
+  const re_pieces = new Array();
   for (let i = 0; i <= SIZE; i += 1) {
     for (let j = 0; j <= SIZE; j += 1) {
       const userId = pieces[i][j];
       if (userId !== 0 && userId !== undefined) {
-        let x = j - HOSEI, y = i - HOSEI;
+        let x = j - HOSEI,
+          y = i - HOSEI;
         re_pieces.push({ x, y, userId });
       }
     }
@@ -56,14 +59,14 @@ function judgePiece(x, y, userId) {
 
   let doneReverse = false;
 
-  if (user[userId] > 0) {   // １枚目か、２枚目以降かをチェック
-    for (let dir of dirAll) {
-      const reversePieces = makeReversePieces(
-        y + dir[1], x + dir[0], userId, dir, []
-      );
-      if (reversePieces) {      // ひっくり返す駒があればuserIdを書き換える
+  if (user[userId] > 0) {
+    // １枚目か、２枚目以降かをチェック
+    for (const dir of dirAll) {
+      reversePieces = new Array();
+      if (makeReversePieces(x + dir[0], y + dir[1], userId, dir[0], dir[1])) {
+        // ひっくり返す駒があればuserIdを書き換える
         doneReverse = true;
-        for (let rp of reversePieces) {
+        for (const rp of reversePieces) {
           user[rp[2]] -= 1;
           user[userId] += 1;
           pieces[conv(rp[1])][conv(rp[0])] = userId;
@@ -74,7 +77,8 @@ function judgePiece(x, y, userId) {
       return putPiece(x, y, userId);
     }
   } else {
-    for (let dir of dirXY) {      //四方のどこかに他者の駒があるかどうかをチェック
+    for (const dir of dirXY) {
+      //四方のどこかに他者の駒があるかどうかをチェック
       if (pieces[conv(y + dir[1])][conv(x + dir[0])] !== 0) {
         return putPiece(x, y, userId);
       }
@@ -83,21 +87,21 @@ function judgePiece(x, y, userId) {
   return false;
 }
 
-function putPiece(x, y, userId){
+function putPiece(x, y, userId) {
   pieces[conv(y)][conv(x)] = userId;
   user[userId] += 1;
   return true;
 }
 
-function makeReversePieces(y, x, userId, dir, array) {
+function makeReversePieces(x, y, userId, dirx, diry) {
   const piece = pieces[conv(y)][conv(x)];
   if (piece === 0) {
     return false;
   } else if (piece !== userId) {
-    array.push([x, y, piece]);
-    return makeReversePieces(y + dir[1], x + dir[0], userId, dir, array);
+    reversePieces.push([x, y, piece]);
+    return makeReversePieces(x + dirx, y + diry, userId, dirx, diry);
   } else {
-    return array;
+    return true;
   }
 }
 
