@@ -40,7 +40,7 @@ function getPieces() {
   for (let i = 0; i <= SIZE; i += 1) {
     for (let j = 0; j <= SIZE; j += 1) {
       const userId = pieces[i][j];
-      if (pieces[i][j] !== 0 && pieces[i][j] !== undefined) {
+      if (userId !== 0 && userId !== undefined) {
         let x = j - HOSEI, y = i - HOSEI;
         re_pieces.push({ x, y, userId });
       }
@@ -71,20 +71,22 @@ function judgePiece(x, y, userId) {
       }
     }
     if (doneReverse) {
-      pieces[conv(y)][conv(x)] = userId;
-      user[userId] += 1;
-      return true;
+      return putPiece(x, y, userId);
     }
   } else {
     for (let dir of dirXY) {      //四方のどこかに他者の駒があるかどうかをチェック
       if (pieces[conv(y + dir[1])][conv(x + dir[0])] !== 0) {
-        pieces[conv(y)][conv(x)] = userId;
-        user[userId] += 1;
-        return true;
+        return putPiece(x, y, userId);
       }
     }
   }
   return false;
+}
+
+function putPiece(x, y, userId){
+  pieces[conv(y)][conv(x)] = userId;
+  user[userId] += 1;
+  return true;
 }
 
 function makeReversePieces(y, x, userId, dir, array) {
