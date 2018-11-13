@@ -65,7 +65,7 @@ function judgePiece(x, y, userId) {
       reversePieces = new Array();
       if (makeReversePieces(x + dir[0], y + dir[1], userId, dir[0], dir[1])) {
         // ひっくり返す駒があればuserIdを書き換える
-        doneReverse = true;
+        if(!doneReverse) doneReverse = true;
         for (const rp of reversePieces) {
           user[rp[2]] -= 1;
           user[userId] += 1;
